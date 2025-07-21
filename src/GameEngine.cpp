@@ -74,12 +74,10 @@ void GameEngine::update(double deltaTime) {
     // 更新玩家
     if (m_player1 && m_player1->isAlive()) {
         m_player1->update(deltaTime);
-        m_player1->setTerrainType(getPlayerTerrainType(m_player1));
     }
     
     if (m_player2 && m_player2->isAlive()) {
         m_player2->update(deltaTime);
-        m_player2->setTerrainType(getPlayerTerrainType(m_player2));
     }
     
     // 更新物理系统
@@ -122,10 +120,15 @@ void GameEngine::handleKeyPress(Qt::Key key) {
         for (auto& item : m_items) {
             if (item->isValid()) {
                 Vector2D playerPos = m_player1->getPosition();
+                Vector2D playerSize(m_player1->getWidth(), m_player1->getHeight());
                 Vector2D itemPos = item->getPosition();
-                double distance = playerPos.distanceTo(itemPos);
+                Vector2D itemSize(item->getWidth(), item->getHeight());
                 
-                if (distance < 50) { // 拾取距离
+                // 扩大拾取范围
+                Vector2D expandedPlayerPos(playerPos.x - 30, playerPos.y - 30);
+                Vector2D expandedPlayerSize(playerSize.x + 60, playerSize.y + 60);
+                
+                if (checkRectCollision(expandedPlayerPos, expandedPlayerSize, itemPos, itemSize)) {
                     if (m_player1->pickupItem(item)) {
                         break;
                     }
@@ -149,10 +152,15 @@ void GameEngine::handleKeyPress(Qt::Key key) {
         for (auto& item : m_items) {
             if (item->isValid()) {
                 Vector2D playerPos = m_player2->getPosition();
+                Vector2D playerSize(m_player2->getWidth(), m_player2->getHeight());
                 Vector2D itemPos = item->getPosition();
-                double distance = playerPos.distanceTo(itemPos);
+                Vector2D itemSize(item->getWidth(), item->getHeight());
                 
-                if (distance < 50) { // 拾取距离
+                // 扩大拾取范围
+                Vector2D expandedPlayerPos(playerPos.x - 30, playerPos.y - 30);
+                Vector2D expandedPlayerSize(playerSize.x + 60, playerSize.y + 60);
+                
+                if (checkRectCollision(expandedPlayerPos, expandedPlayerSize, itemPos, itemSize)) {
                     if (m_player2->pickupItem(item)) {
                         break;
                     }
@@ -318,7 +326,6 @@ void GameEngine::checkPlayerPlatformCollision(std::shared_ptr<Player> player) {
     Vector2D playerSize(player->getWidth(), player->getHeight());
     Vector2D playerVel = player->getVelocity();
     
-    bool wasGrounded = player->isGrounded();
     bool nowGrounded = false;
     
     for (const auto& platform : m_platforms) {
@@ -331,7 +338,6 @@ void GameEngine::checkPlayerPlatformCollision(std::shared_ptr<Player> player) {
                 player->setPosition(Vector2D(playerPos.x, platformPos.y - playerSize.y));
                 player->setVelocity(Vector2D(playerVel.x, 0));
                 nowGrounded = true;
-                player->setTerrainType(platform.type);
             }
             // 从下方撞到平台
             else if (playerVel.y < 0 && playerPos.y > platformPos.y) {
@@ -350,9 +356,49 @@ void GameEngine::checkPlayerPlatformCollision(std::shared_ptr<Player> player) {
         }
     }
     
-    // 更新地面状态
-    if (!nowGrounded && playerPos.y >= GameConfig::GROUND_LEVEL - playerSize.y) {
-        nowGrounded = true;
+    // 检查玩家是否站在任何平台上（包括地面）
+    if (!nowGrounded) {
+        // 检查是否在地面上
+        if (playerPos.y + playerSize.y >= GameConfig::GROUND_LEVEL - 5) {
+            nowGrounded = true;
+        } else {
+            // 检查是否站在平台上
+            for (const auto& platform : m_platforms) {
+                Vector2D platformPos = platform.position;
+                Vector2D platformSize(platform.width, platform.height);
+                
+                // 检查水平重叠
+                if (playerPos.x + playerSize.x > platformPos.x && 
+                    playerPos.x < platformPos.x + platformSize.x) {
+                    // 检查是否站在平台顶部
+                    if (playerPos.y + playerSize.y >= platformPos.y && 
+                        playerPos.y + playerSize.y <= platformPos.y + 10) {
+                        nowGrounded = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    // 更新玩家的地面状态
+    if (nowGrounded) {
+        if (!player->isGrounded()) {
+            // 刚刚落地，重置垂直速度
+            if (playerVel.y > 0) {
+                player->setVelocity(Vector2D(playerVel.x, 0));
+            }
+        }
+        // 强制设置地面状态
+        player->setGrounded(true);
+        
+        // 更新地形类型（在设置地面状态后）
+        TerrainType currentTerrain = getPlayerTerrainType(player);
+        player->setTerrainType(currentTerrain);
+    } else {
+        player->setGrounded(false);
+        // 空中时设为普通地形
+        player->setTerrainType(TerrainType::GROUND);
     }
 }
 
@@ -477,16 +523,24 @@ TerrainType GameEngine::getPlayerTerrainType(std::shared_ptr<Player> player) {
     Vector2D playerPos = player->getPosition();
     Vector2D playerSize(player->getWidth(), player->getHeight());
     
+    // 只有在地面上的玩家才检测地形类型
+    if (!player->isGrounded()) {
+        return TerrainType::GROUND;
+    }
+    
     for (const auto& platform : m_platforms) {
         Vector2D platformPos = platform.position;
         Vector2D platformSize(platform.width, platform.height);
         
-        // 检查玩家是否站在平台上
+        // 检查玩家是否在平台的水平范围内
         if (playerPos.x + playerSize.x > platformPos.x &&
-            playerPos.x < platformPos.x + platformSize.x &&
-            playerPos.y + playerSize.y >= platformPos.y &&
-            playerPos.y + playerSize.y <= platformPos.y + platformSize.y + 10) {
-            return platform.type;
+            playerPos.x < platformPos.x + platformSize.x) {
+            // 检查玩家是否站在平台顶部（允许一定的容差）
+            double playerBottom = playerPos.y + playerSize.y;
+            if (playerBottom >= platformPos.y - 5 && 
+                playerBottom <= platformPos.y + platformSize.y + 15) {
+                return platform.type;
+            }
         }
     }
     

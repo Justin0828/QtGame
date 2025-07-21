@@ -180,9 +180,9 @@ void Player::updatePhysics(double deltaTime) {
         m_position.y = GameConfig::GROUND_LEVEL - getHeight();
         m_velocity.y = 0;
         m_isGrounded = true;
-    } else {
-        m_isGrounded = false;
     }
+    // 注意：不在这里设置m_isGrounded = false，因为这会与GameEngine的碰撞检测冲突
+    // GameEngine会负责设置正确的地面状态
 }
 
 void Player::updateAdrenalineEffect(double deltaTime) {

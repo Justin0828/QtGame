@@ -166,7 +166,11 @@ std::shared_ptr<Projectile> BallWeapon::attack(Player* player, const Vector2D& t
     resetCooldown();
     
     Vector2D playerPos = player->getPosition();
-    Vector2D startPos = playerPos + Vector2D(player->isFacingRight() ? 20 : -20, -10);
+    // 从玩家中心发射实心球
+    Vector2D startPos = playerPos + Vector2D(
+        player->isFacingRight() ? player->getWidth() * 0.8 : player->getWidth() * 0.2 - 20, 
+        player->getHeight() * 0.3  // 从玩家上半身发射
+    );
     
     // 计算抛物线投掷速度
     double direction = player->isFacingRight() ? 1.0 : -1.0;
@@ -194,7 +198,11 @@ std::shared_ptr<Projectile> RifleWeapon::attack(Player* player, const Vector2D& 
     resetCooldown();
     
     Vector2D playerPos = player->getPosition();
-    Vector2D startPos = playerPos + Vector2D(player->isFacingRight() ? 25 : -25, -15);
+    // 从玩家中心高度发射，水平偏移根据朝向
+    Vector2D startPos = playerPos + Vector2D(
+        player->isFacingRight() ? player->getWidth() : -5, 
+        player->getHeight() * 0.4  // 从玩家中心偏上一点发射
+    );
     
     // 水平射击
     Vector2D velocity(
@@ -220,7 +228,11 @@ std::shared_ptr<Projectile> SniperWeapon::attack(Player* player, const Vector2D&
     resetCooldown();
     
     Vector2D playerPos = player->getPosition();
-    Vector2D startPos = playerPos + Vector2D(player->isFacingRight() ? 30 : -30, -15);
+    // 从玩家中心高度发射，水平偏移根据朝向
+    Vector2D startPos = playerPos + Vector2D(
+        player->isFacingRight() ? player->getWidth() : -5, 
+        player->getHeight() * 0.4  // 从玩家中心偏上一点发射
+    );
     
     // 水平射击，速度更快
     Vector2D velocity(

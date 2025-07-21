@@ -164,6 +164,7 @@ public:
     void setPosition(const Vector2D& pos) { m_position = pos; }
     void setVelocity(const Vector2D& vel) { m_velocity = vel; }
     void setWeapon(std::shared_ptr<Weapon> weapon) { m_weapon = weapon; }
+    void setGrounded(bool grounded) { m_isGrounded = grounded; }
 
 private:
     /**
