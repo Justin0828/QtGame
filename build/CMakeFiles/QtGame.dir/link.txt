@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\QtGame.dir/objects.a
+C:\Qt\Tools\mingw1120_64\bin\ar.exe qc CMakeFiles\QtGame.dir/objects.a @CMakeFiles\QtGame.dir\objects1.rsp
+C:\Qt\Tools\mingw1120_64\bin\c++.exe -Wl,--whole-archive CMakeFiles\QtGame.dir/objects.a -Wl,--no-whole-archive -o bin\QtGame.exe -Wl,--out-implib,libQtGame.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\QtGame.dir\linkLibs.rsp

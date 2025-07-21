@@ -1,0 +1,5 @@
+C:/Users/12524/Desktop/Github_Repos/QtGame/build/CMakeFiles/QtGame.dir
+C:/Users/12524/Desktop/Github_Repos/QtGame/build/CMakeFiles/edit_cache.dir
+C:/Users/12524/Desktop/Github_Repos/QtGame/build/CMakeFiles/rebuild_cache.dir
+C:/Users/12524/Desktop/Github_Repos/QtGame/build/CMakeFiles/QtGame_autogen_timestamp_deps.dir
+C:/Users/12524/Desktop/Github_Repos/QtGame/build/CMakeFiles/QtGame_autogen.dir

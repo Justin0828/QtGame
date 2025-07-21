@@ -1,0 +1,3 @@
+# Hashes of file build rules.
+4ea0f04f585ce2378988b33774cc2a97 CMakeFiles/QtGame_autogen
+39be0e751bfa08204d002fc7d24b8d49 QtGame_autogen/timestamp
