@@ -1,8 +1,8 @@
 /**
  * @file GameEngine.h
- * @brief 游戏引擎类定义
- * @author QtGame Team
- * @date 2024
+ * @brief Game engine class definition
+ * @author Justin0828
+ * @date 2025-07-23
  */
 
 #ifndef GAMEENGINE_H
@@ -19,215 +19,215 @@
 #include <QObject>
 
 /**
- * @brief 游戏状态枚举
+ * @brief Game state enumeration
  */
 enum class GameState {
-    PLAYING,    ///< 游戏进行中
-    PAUSED,     ///< 游戏暂停
-    GAME_OVER   ///< 游戏结束
+    PLAYING,    ///< Game in progress
+    PAUSED,     ///< Game paused
+    GAME_OVER   ///< Game over
 };
 
 /**
- * @brief 平台结构体
+ * @brief Platform structure
  */
 struct Platform {
-    Vector2D position;    ///< 位置
-    double width;         ///< 宽度
-    double height;        ///< 高度
-    TerrainType type;     ///< 地形类型
-    QColor color;         ///< 颜色
+    Vector2D position;    ///< Position
+    double width;         ///< Width
+    double height;        ///< Height
+    TerrainType type;     ///< Terrain type
+    QColor color;         ///< Color
     
     /**
-     * @brief 构造函数
+     * @brief Constructor
      */
     Platform(const Vector2D& pos, double w, double h, TerrainType t, const QColor& c)
         : position(pos), width(w), height(h), type(t), color(c) {}
 };
 
 /**
- * @brief 游戏引擎类
+ * @brief Game engine class
  * 
- * 负责游戏的核心逻辑，包括玩家管理、物理系统、碰撞检测等
+ * Responsible for core game logic including player management, physics system, collision detection, etc.
  */
 class GameEngine : public QObject {
     Q_OBJECT
 
 public:
     /**
-     * @brief 构造函数
+     * @brief Constructor
      */
     explicit GameEngine(QObject* parent = nullptr);
 
     /**
-     * @brief 析构函数
+     * @brief Destructor
      */
     ~GameEngine();
 
     /**
-     * @brief 初始化游戏
+     * @brief Initialize the game
      */
     void initialize();
 
     /**
-     * @brief 开始游戏
+     * @brief Start the game
      */
     void startGame();
 
     /**
-     * @brief 暂停/继续游戏
+     * @brief Toggle pause/resume game
      */
     void togglePause();
 
     /**
-     * @brief 重置游戏
+     * @brief Reset the game
      */
     void resetGame();
 
     /**
-     * @brief 更新游戏状态
-     * @param deltaTime 时间增量
+     * @brief Update game state
+     * @param deltaTime Time delta
      */
     void update(double deltaTime);
 
     /**
-     * @brief 处理按键按下事件
-     * @param key 按键
+     * @brief Handle key press events
+     * @param key The pressed key
      */
     void handleKeyPress(Qt::Key key);
 
     /**
-     * @brief 处理按键释放事件
-     * @param key 按键
+     * @brief Handle key release events
+     * @param key The released key
      */
     void handleKeyRelease(Qt::Key key);
 
-    // Getter 方法
+    // Getter methods
     GameState getGameState() const { return m_gameState; }
     std::shared_ptr<Player> getPlayer1() const { return m_player1; }
     std::shared_ptr<Player> getPlayer2() const { return m_player2; }
     const std::vector<std::shared_ptr<Projectile>>& getProjectiles() const { return m_projectiles; }
     const std::vector<std::shared_ptr<Item>>& getItems() const { return m_items; }
     const std::vector<Platform>& getPlatforms() const { return m_platforms; }
-    int getWinner() const { return m_winner; } // 0: 无胜者, 1: 玩家1, 2: 玩家2
+    int getWinner() const { return m_winner; } // 0: no winner, 1: player1, 2: player2
 
 private slots:
     /**
-     * @brief 生成随机物品
+     * @brief Spawn random items
      */
     void spawnRandomItem();
 
 private:
     /**
-     * @brief 创建地图平台
+     * @brief Create map platforms
      */
     void createPlatforms();
 
     /**
-     * @brief 更新物理系统
-     * @param deltaTime 时间增量
+     * @brief Update physics system
+     * @param deltaTime Time delta
      */
     void updatePhysics(double deltaTime);
 
     /**
-     * @brief 更新投射物
-     * @param deltaTime 时间增量
+     * @brief Update projectiles
+     * @param deltaTime Time delta
      */
     void updateProjectiles(double deltaTime);
 
     /**
-     * @brief 更新物品
-     * @param deltaTime 时间增量
+     * @brief Update items
+     * @param deltaTime Time delta
      */
     void updateItems(double deltaTime);
 
     /**
-     * @brief 检测碰撞
+     * @brief Check collisions
      */
     void checkCollisions();
 
     /**
-     * @brief 检测玩家与平台碰撞
-     * @param player 玩家
+     * @brief Check player-platform collision
+     * @param player The player
      */
     void checkPlayerPlatformCollision(std::shared_ptr<Player> player);
 
     /**
-     * @brief 检测投射物与玩家碰撞
+     * @brief Check projectile-player collision
      */
     void checkProjectilePlayerCollision();
 
     /**
-     * @brief 检测投射物与平台碰撞
+     * @brief Check projectile-platform collision
      */
     void checkProjectilePlatformCollision();
 
     /**
-     * @brief 检测玩家与物品碰撞
+     * @brief Check player-item collision
      */
     void checkPlayerItemCollision();
 
     /**
-     * @brief 处理玩家攻击
-     * @param player 攻击的玩家
+     * @brief Handle player attack
+     * @param player The attacking player
      */
     void handlePlayerAttack(std::shared_ptr<Player> player);
 
     /**
-     * @brief 检测两个矩形是否碰撞
-     * @param pos1 第一个矩形位置
-     * @param size1 第一个矩形大小
-     * @param pos2 第二个矩形位置
-     * @param size2 第二个矩形大小
-     * @return bool 是否碰撞
+     * @brief Check collision between two rectangles
+     * @param pos1 First rectangle position
+     * @param size1 First rectangle size
+     * @param pos2 Second rectangle position
+     * @param size2 Second rectangle size
+     * @return bool Whether collision occurs
      */
     bool checkRectCollision(const Vector2D& pos1, const Vector2D& size1,
                            const Vector2D& pos2, const Vector2D& size2);
 
     /**
-     * @brief 检测圆形与矩形碰撞
-     * @param circlePos 圆心位置
-     * @param radius 半径
-     * @param rectPos 矩形位置
-     * @param rectSize 矩形大小
-     * @return bool 是否碰撞
+     * @brief Check collision between circle and rectangle
+     * @param circlePos Circle center position
+     * @param radius Circle radius
+     * @param rectPos Rectangle position
+     * @param rectSize Rectangle size
+     * @return bool Whether collision occurs
      */
     bool checkCircleRectCollision(const Vector2D& circlePos, double radius,
                                  const Vector2D& rectPos, const Vector2D& rectSize);
 
     /**
-     * @brief 获取玩家当前所在地形类型
-     * @param player 玩家
-     * @return TerrainType 地形类型
+     * @brief Get the terrain type where player is standing
+     * @param player The player
+     * @return TerrainType Terrain type
      */
     TerrainType getPlayerTerrainType(std::shared_ptr<Player> player);
 
     /**
-     * @brief 生成随机物品类型
-     * @return ItemType 物品类型
+     * @brief Generate random item type
+     * @return ItemType Item type
      */
     ItemType generateRandomItemType();
 
     /**
-     * @brief 生成随机掉落位置
-     * @return Vector2D 掉落位置
+     * @brief Generate random drop position
+     * @return Vector2D Drop position
      */
     Vector2D generateRandomDropPosition();
 
 private:
-    GameState m_gameState;                                    ///< 游戏状态
-    std::shared_ptr<Player> m_player1;                       ///< 玩家1
-    std::shared_ptr<Player> m_player2;                       ///< 玩家2
-    std::vector<std::shared_ptr<Projectile>> m_projectiles; ///< 投射物列表
-    std::vector<std::shared_ptr<Item>> m_items;             ///< 物品列表
-    std::vector<Platform> m_platforms;                       ///< 平台列表
-    int m_winner;                                             ///< 胜利者
+    GameState m_gameState;                                    ///< Game state
+    std::shared_ptr<Player> m_player1;                       ///< Player 1
+    std::shared_ptr<Player> m_player2;                       ///< Player 2
+    std::vector<std::shared_ptr<Projectile>> m_projectiles; ///< Projectile list
+    std::vector<std::shared_ptr<Item>> m_items;             ///< Item list
+    std::vector<Platform> m_platforms;                       ///< Platform list
+    int m_winner;                                             ///< Winner
 
-    // 随机数生成器
-    std::random_device m_randomDevice;                       ///< 随机设备
-    std::mt19937 m_randomGenerator;                          ///< 随机数生成器
+    // Random number generator
+    std::random_device m_randomDevice;                       ///< Random device
+    std::mt19937 m_randomGenerator;                          ///< Random number generator
 
-    // 物品掉落定时器
-    QTimer* m_itemDropTimer;                                 ///< 物品掉落定时器
+    // Item drop timer
+    QTimer* m_itemDropTimer;                                 ///< Item drop timer
 };
 
 #endif // GAMEENGINE_H 

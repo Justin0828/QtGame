@@ -1,8 +1,8 @@
 /**
  * @file Vector2D.cpp
- * @brief 2D向量类实现
- * @author QtGame Team
- * @date 2024
+ * @brief 2D vector class implementation
+ * @author Justin0828
+ * @date 2025-07-23
  */
 
 #include "Vector2D.h"

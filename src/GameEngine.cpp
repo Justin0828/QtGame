@@ -1,8 +1,8 @@
 /**
  * @file GameEngine.cpp
- * @brief 游戏引擎类实现
- * @author QtGame Team
- * @date 2024
+ * @brief Game engine class implementation
+ * @author Justin0828
+ * @date 2025-07-23
  */
 
 #include "GameEngine.h"
@@ -25,21 +25,21 @@ GameEngine::~GameEngine() {
 }
 
 void GameEngine::initialize() {
-    // 创建玩家
+    // Create players
     Vector2D player1StartPos(200, GameConfig::GROUND_LEVEL - GameConfig::PLAYER_HEIGHT);
     Vector2D player2StartPos(1000, GameConfig::GROUND_LEVEL - GameConfig::PLAYER_HEIGHT);
     
-    m_player1 = std::make_shared<Player>(player1StartPos, QColor(0, 0, 255), true);  // 蓝色玩家1
-    m_player2 = std::make_shared<Player>(player2StartPos, QColor(255, 0, 0), false); // 红色玩家2
+    m_player1 = std::make_shared<Player>(player1StartPos, QColor(0, 0, 255), true);  // Blue player 1
+    m_player2 = std::make_shared<Player>(player2StartPos, QColor(255, 0, 0), false); // Red player 2
     
-    // 创建地图
+    // Create map
     createPlatforms();
     
-    // 重置游戏状态
+    // Reset game state
     m_gameState = GameState::PLAYING;
     m_winner = 0;
     
-    // 清空列表
+    // Clear lists
     m_projectiles.clear();
     m_items.clear();
 }
@@ -49,7 +49,7 @@ void GameEngine::startGame() {
         m_gameState = GameState::PLAYING;
     }
     
-    // 启动物品掉落计时器
+    // Start item drop timer
     m_itemDropTimer->start(GameConfig::ITEM_DROP_INTERVAL);
 }
 
@@ -71,7 +71,7 @@ void GameEngine::resetGame() {
 void GameEngine::update(double deltaTime) {
     if (m_gameState != GameState::PLAYING) return;
     
-    // 更新玩家
+    // Update players
     if (m_player1 && m_player1->isAlive()) {
         m_player1->update(deltaTime);
     }
@@ -80,19 +80,19 @@ void GameEngine::update(double deltaTime) {
         m_player2->update(deltaTime);
     }
     
-    // 更新物理系统
+    // Update physics system
     updatePhysics(deltaTime);
     
-    // 更新投射物
+    // Update projectiles
     updateProjectiles(deltaTime);
     
-    // 更新物品
+    // Update items
     updateItems(deltaTime);
     
-    // 检测碰撞
+    // Check collisions
     checkCollisions();
     
-    // 检查游戏结束条件
+    // Check game over conditions
     if (!m_player1->isAlive()) {
         m_winner = 2;
         m_gameState = GameState::GAME_OVER;
@@ -107,7 +107,7 @@ void GameEngine::update(double deltaTime) {
 void GameEngine::handleKeyPress(Qt::Key key) {
     if (m_gameState != GameState::PLAYING) return;
     
-    // 玩家1控制
+    // Player 1 controls
     if (key == GameConfig::PLAYER1_LEFT) {
         m_player1->moveLeft();
     } else if (key == GameConfig::PLAYER1_RIGHT) {
@@ -116,7 +116,7 @@ void GameEngine::handleKeyPress(Qt::Key key) {
         m_player1->jump();
     } else if (key == GameConfig::PLAYER1_CROUCH) {
         m_player1->crouch();
-        // 尝试拾取物品
+        // Try to pick up items
         for (auto& item : m_items) {
             if (item->isValid()) {
                 Vector2D playerPos = m_player1->getPosition();
@@ -124,7 +124,7 @@ void GameEngine::handleKeyPress(Qt::Key key) {
                 Vector2D itemPos = item->getPosition();
                 Vector2D itemSize(item->getWidth(), item->getHeight());
                 
-                // 扩大拾取范围
+                // Expand pickup range
                 Vector2D expandedPlayerPos(playerPos.x - 30, playerPos.y - 30);
                 Vector2D expandedPlayerSize(playerSize.x + 60, playerSize.y + 60);
                 
@@ -139,7 +139,7 @@ void GameEngine::handleKeyPress(Qt::Key key) {
         handlePlayerAttack(m_player1);
     }
     
-    // 玩家2控制
+    // Player 2 controls
     if (key == GameConfig::PLAYER2_LEFT) {
         m_player2->moveLeft();
     } else if (key == GameConfig::PLAYER2_RIGHT) {
@@ -148,7 +148,7 @@ void GameEngine::handleKeyPress(Qt::Key key) {
         m_player2->jump();
     } else if (key == GameConfig::PLAYER2_CROUCH) {
         m_player2->crouch();
-        // 尝试拾取物品
+        // Try to pick up items
         for (auto& item : m_items) {
             if (item->isValid()) {
                 Vector2D playerPos = m_player2->getPosition();
@@ -156,7 +156,7 @@ void GameEngine::handleKeyPress(Qt::Key key) {
                 Vector2D itemPos = item->getPosition();
                 Vector2D itemSize(item->getWidth(), item->getHeight());
                 
-                // 扩大拾取范围
+                // Expand pickup range
                 Vector2D expandedPlayerPos(playerPos.x - 30, playerPos.y - 30);
                 Vector2D expandedPlayerSize(playerSize.x + 60, playerSize.y + 60);
                 
@@ -175,14 +175,14 @@ void GameEngine::handleKeyPress(Qt::Key key) {
 void GameEngine::handleKeyRelease(Qt::Key key) {
     if (m_gameState != GameState::PLAYING) return;
     
-    // 玩家1控制
+    // Player 1 controls
     if (key == GameConfig::PLAYER1_LEFT || key == GameConfig::PLAYER1_RIGHT) {
         m_player1->stopMoving();
     } else if (key == GameConfig::PLAYER1_CROUCH) {
         m_player1->stopCrouching();
     }
     
-    // 玩家2控制
+    // Player 2 controls
     if (key == GameConfig::PLAYER2_LEFT || key == GameConfig::PLAYER2_RIGHT) {
         m_player2->stopMoving();
     } else if (key == GameConfig::PLAYER2_CROUCH) {
@@ -224,55 +224,55 @@ void GameEngine::spawnRandomItem() {
 void GameEngine::createPlatforms() {
     m_platforms.clear();
     
-    // 地面
+    // Ground
     m_platforms.emplace_back(Vector2D(0, GameConfig::GROUND_LEVEL), 
                            GameConfig::WINDOW_WIDTH, 50, 
                            TerrainType::GROUND, QColor(139, 69, 19));
     
-    // 中央平台（草地）
+    // Central platform (grass)
     m_platforms.emplace_back(Vector2D(450, 600), 
                            300, 20, 
                            TerrainType::GRASS, QColor(34, 139, 34));
     
-    // 左侧平台（冰场）
+    // Left platform (ice)
     m_platforms.emplace_back(Vector2D(100, 500), 
                            200, 20, 
                            TerrainType::ICE, QColor(173, 216, 230));
     
-    // 右侧平台（普通）
+    // Right platform (normal)
     m_platforms.emplace_back(Vector2D(900, 500), 
                            200, 20, 
                            TerrainType::GROUND, QColor(139, 69, 19));
     
-    // 高层平台（冰场）
+    // High-level platform (ice)
     m_platforms.emplace_back(Vector2D(350, 400), 
                            400, 20, 
                            TerrainType::ICE, QColor(173, 216, 230));
     
-    // 左上角小平台（草地）
+    // Top-left small platform (grass)
     m_platforms.emplace_back(Vector2D(50, 300), 
                            150, 20, 
                            TerrainType::GRASS, QColor(34, 139, 34));
     
-    // 右上角小平台（草地）
+    // Top-right small platform (grass)
     m_platforms.emplace_back(Vector2D(1000, 300), 
                            150, 20, 
                            TerrainType::GRASS, QColor(34, 139, 34));
 }
 
 void GameEngine::updatePhysics(double deltaTime) {
-    // 检查玩家与平台碰撞
+    // Check player-platform collision
     checkPlayerPlatformCollision(m_player1);
     checkPlayerPlatformCollision(m_player2);
 }
 
 void GameEngine::updateProjectiles(double deltaTime) {
-    // 更新投射物
+    // Update projectiles
     for (auto& projectile : m_projectiles) {
         projectile->update(deltaTime);
     }
     
-    // 移除无效投射物
+    // Remove invalid projectiles
     m_projectiles.erase(
         std::remove_if(m_projectiles.begin(), m_projectiles.end(),
                       [](const std::shared_ptr<Projectile>& p) {
@@ -283,18 +283,18 @@ void GameEngine::updateProjectiles(double deltaTime) {
 }
 
 void GameEngine::updateItems(double deltaTime) {
-    // 更新物品
+    // Update items
     for (auto& item : m_items) {
         item->update(deltaTime);
         
-        // 检查物品与平台碰撞
+        // Check item-platform collision
         Vector2D itemPos = item->getPosition();
         Vector2D itemSize(item->getWidth(), item->getHeight());
         
         for (const auto& platform : m_platforms) {
             if (checkRectCollision(itemPos, itemSize, 
                                  platform.position, Vector2D(platform.width, platform.height))) {
-                // 物品落在平台上
+                // Item landed on platform
                 item->setPosition(Vector2D(itemPos.x, platform.position.y - item->getHeight()));
                 item->setVelocity(Vector2D(0, 0));
                 item->setGrounded(true);
@@ -303,7 +303,7 @@ void GameEngine::updateItems(double deltaTime) {
         }
     }
     
-    // 移除无效物品
+    // Remove invalid items
     m_items.erase(
         std::remove_if(m_items.begin(), m_items.end(),
                       [](const std::shared_ptr<Item>& item) {
@@ -316,7 +316,7 @@ void GameEngine::updateItems(double deltaTime) {
 void GameEngine::checkCollisions() {
     checkProjectilePlayerCollision();
     checkProjectilePlatformCollision();
-    // 玩家与物品的碰撞在按键处理中检测
+    // Player-item collision is checked in key handling
 }
 
 void GameEngine::checkPlayerPlatformCollision(std::shared_ptr<Player> player) {
@@ -333,18 +333,18 @@ void GameEngine::checkPlayerPlatformCollision(std::shared_ptr<Player> player) {
         Vector2D platformSize(platform.width, platform.height);
         
         if (checkRectCollision(playerPos, playerSize, platformPos, platformSize)) {
-            // 从上方落到平台上
+            // Landing on platform from above
             if (playerVel.y > 0 && playerPos.y < platformPos.y) {
                 player->setPosition(Vector2D(playerPos.x, platformPos.y - playerSize.y));
                 player->setVelocity(Vector2D(playerVel.x, 0));
                 nowGrounded = true;
             }
-            // 从下方撞到平台
+            // Hitting platform from below
             else if (playerVel.y < 0 && playerPos.y > platformPos.y) {
                 player->setPosition(Vector2D(playerPos.x, platformPos.y + platformSize.y));
                 player->setVelocity(Vector2D(playerVel.x, 0));
             }
-            // 从侧面撞到平台
+            // Hitting platform from side
             else {
                 if (playerVel.x > 0) {
                     player->setPosition(Vector2D(platformPos.x - playerSize.x, playerPos.y));
@@ -356,21 +356,21 @@ void GameEngine::checkPlayerPlatformCollision(std::shared_ptr<Player> player) {
         }
     }
     
-    // 检查玩家是否站在任何平台上（包括地面）
+    // Check if player is standing on any platform (including ground)
     if (!nowGrounded) {
-        // 检查是否在地面上
+        // Check if on ground
         if (playerPos.y + playerSize.y >= GameConfig::GROUND_LEVEL - 5) {
             nowGrounded = true;
         } else {
-            // 检查是否站在平台上
+            // Check if standing on platform
             for (const auto& platform : m_platforms) {
                 Vector2D platformPos = platform.position;
                 Vector2D platformSize(platform.width, platform.height);
                 
-                // 检查水平重叠
+                // Check horizontal overlap
                 if (playerPos.x + playerSize.x > platformPos.x && 
                     playerPos.x < platformPos.x + platformSize.x) {
-                    // 检查是否站在平台顶部
+                    // Check if standing on platform top
                     if (playerPos.y + playerSize.y >= platformPos.y && 
                         playerPos.y + playerSize.y <= platformPos.y + 10) {
                         nowGrounded = true;
@@ -381,23 +381,23 @@ void GameEngine::checkPlayerPlatformCollision(std::shared_ptr<Player> player) {
         }
     }
     
-    // 更新玩家的地面状态
+    // Update player's ground state
     if (nowGrounded) {
         if (!player->isGrounded()) {
-            // 刚刚落地，重置垂直速度
+            // Just landed, reset vertical velocity
             if (playerVel.y > 0) {
                 player->setVelocity(Vector2D(playerVel.x, 0));
             }
         }
-        // 强制设置地面状态
+        // Force set ground state
         player->setGrounded(true);
         
-        // 更新地形类型（在设置地面状态后）
+        // Update terrain type (after setting ground state)
         TerrainType currentTerrain = getPlayerTerrainType(player);
         player->setTerrainType(currentTerrain);
     } else {
         player->setGrounded(false);
-        // 空中时设为普通地形
+        // Set to normal terrain when airborne
         player->setTerrainType(TerrainType::GROUND);
     }
 }
@@ -407,8 +407,8 @@ void GameEngine::checkProjectilePlayerCollision() {
         auto& projectile = *it;
         bool hit = false;
         
-        // 检查与玩家1碰撞
-        if (projectile->getOwnerId() != 0) { // 不是玩家1发射的
+        // Check collision with player 1
+        if (projectile->getOwnerId() != 0) { // Not fired by player 1
             Vector2D p1Pos = m_player1->getPosition();
             Vector2D p1Size(m_player1->getWidth(), m_player1->getHeight());
             
@@ -419,8 +419,8 @@ void GameEngine::checkProjectilePlayerCollision() {
             }
         }
         
-        // 检查与玩家2碰撞
-        if (!hit && projectile->getOwnerId() != 1) { // 不是玩家2发射的
+        // Check collision with player 2
+        if (!hit && projectile->getOwnerId() != 1) { // Not fired by player 2
             Vector2D p2Pos = m_player2->getPosition();
             Vector2D p2Size(m_player2->getWidth(), m_player2->getHeight());
             
@@ -471,7 +471,7 @@ void GameEngine::handlePlayerAttack(std::shared_ptr<Player> player) {
     auto weapon = player->getWeapon();
     Vector2D targetPos = player->getPosition();
     
-    // 近战武器直接伤害检测
+    // Melee weapon direct damage detection
     if (weapon->getType() == WeaponType::FIST || weapon->getType() == WeaponType::KNIFE) {
         if (!weapon->canAttack()) return;
         
@@ -482,7 +482,7 @@ void GameEngine::handlePlayerAttack(std::shared_ptr<Player> player) {
         double distance = playerPos.distanceTo(targetPlayerPos);
         double attackRange = weapon->getAttackRange();
         
-        // 检查攻击方向
+        // Check attack direction
         bool facingTarget = (player->isFacingRight() && targetPlayerPos.x > playerPos.x) ||
                           (!player->isFacingRight() && targetPlayerPos.x < playerPos.x);
         
@@ -490,7 +490,7 @@ void GameEngine::handlePlayerAttack(std::shared_ptr<Player> player) {
             target->takeDamage(weapon->getDamage());
         }
     }
-    // 远程武器生成投射物
+    // Ranged weapon generate projectiles
     else {
         auto projectile = weapon->attack(player.get(), targetPos);
         if (projectile) {
@@ -509,11 +509,11 @@ bool GameEngine::checkRectCollision(const Vector2D& pos1, const Vector2D& size1,
 
 bool GameEngine::checkCircleRectCollision(const Vector2D& circlePos, double radius,
                                          const Vector2D& rectPos, const Vector2D& rectSize) {
-    // 找到矩形上离圆心最近的点
+    // Find the closest point on rectangle to circle center
     double closestX = std::max(rectPos.x, std::min(circlePos.x, rectPos.x + rectSize.x));
     double closestY = std::max(rectPos.y, std::min(circlePos.y, rectPos.y + rectSize.y));
     
-    // 计算距离
+    // Calculate distance
     double distance = Vector2D(circlePos.x - closestX, circlePos.y - closestY).length();
     
     return distance <= radius;
@@ -523,7 +523,7 @@ TerrainType GameEngine::getPlayerTerrainType(std::shared_ptr<Player> player) {
     Vector2D playerPos = player->getPosition();
     Vector2D playerSize(player->getWidth(), player->getHeight());
     
-    // 只有在地面上的玩家才检测地形类型
+    // Only detect terrain type for grounded players
     if (!player->isGrounded()) {
         return TerrainType::GROUND;
     }
@@ -532,10 +532,10 @@ TerrainType GameEngine::getPlayerTerrainType(std::shared_ptr<Player> player) {
         Vector2D platformPos = platform.position;
         Vector2D platformSize(platform.width, platform.height);
         
-        // 检查玩家是否在平台的水平范围内
+        // Check if player is within platform's horizontal range
         if (playerPos.x + playerSize.x > platformPos.x &&
             playerPos.x < platformPos.x + platformSize.x) {
-            // 检查玩家是否站在平台顶部（允许一定的容差）
+            // Check if player is standing on platform top (with tolerance)
             double playerBottom = playerPos.y + playerSize.y;
             if (playerBottom >= platformPos.y - 5 && 
                 playerBottom <= platformPos.y + platformSize.y + 15) {

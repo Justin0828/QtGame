@@ -1,8 +1,8 @@
 /**
  * @file Vector2D.h
- * @brief 2D向量类定义
- * @author QtGame Team
- * @date 2024
+ * @brief 2D vector class definition
+ * @author Justin0828
+ * @date 2025-07-23
  */
 
 #ifndef VECTOR2D_H
@@ -11,91 +11,91 @@
 #include <cmath>
 
 /**
- * @brief 2D向量类
+ * @brief 2D vector class
  * 
- * 用于表示游戏中的位置、速度、加速度等2D向量量
+ * Used to represent 2D vector quantities like position, velocity, acceleration, etc. in the game
  */
 class Vector2D {
 public:
-    double x; ///< X坐标
-    double y; ///< Y坐标
+    double x; ///< X coordinate
+    double y; ///< Y coordinate
 
     /**
-     * @brief 默认构造函数
+     * @brief Default constructor
      */
     Vector2D() : x(0), y(0) {}
 
     /**
-     * @brief 构造函数
-     * @param x X坐标
-     * @param y Y坐标
+     * @brief Constructor
+     * @param x X coordinate
+     * @param y Y coordinate
      */
     Vector2D(double x, double y) : x(x), y(y) {}
 
     /**
-     * @brief 向量加法
-     * @param other 另一个向量
-     * @return Vector2D 相加结果
+     * @brief Vector addition
+     * @param other Another vector
+     * @return Vector2D Addition result
      */
     Vector2D operator+(const Vector2D& other) const;
 
     /**
-     * @brief 向量减法
-     * @param other 另一个向量
-     * @return Vector2D 相减结果
+     * @brief Vector subtraction
+     * @param other Another vector
+     * @return Vector2D Subtraction result
      */
     Vector2D operator-(const Vector2D& other) const;
 
     /**
-     * @brief 向量数乘
-     * @param scalar 标量
-     * @return Vector2D 数乘结果
+     * @brief Scalar multiplication
+     * @param scalar Scalar value
+     * @return Vector2D Scalar multiplication result
      */
     Vector2D operator*(double scalar) const;
 
     /**
-     * @brief 向量数除
-     * @param scalar 标量
-     * @return Vector2D 数除结果
+     * @brief Scalar division
+     * @param scalar Scalar value
+     * @return Vector2D Scalar division result
      */
     Vector2D operator/(double scalar) const;
 
     /**
-     * @brief 向量赋值加法
-     * @param other 另一个向量
-     * @return Vector2D& 自身引用
+     * @brief Vector addition assignment
+     * @param other Another vector
+     * @return Vector2D& Self reference
      */
     Vector2D& operator+=(const Vector2D& other);
 
     /**
-     * @brief 向量赋值减法
-     * @param other 另一个向量
-     * @return Vector2D& 自身引用
+     * @brief Vector subtraction assignment
+     * @param other Another vector
+     * @return Vector2D& Self reference
      */
     Vector2D& operator-=(const Vector2D& other);
 
     /**
-     * @brief 计算向量长度
-     * @return double 向量长度
+     * @brief Calculate vector length
+     * @return double Vector length
      */
     double length() const;
 
     /**
-     * @brief 计算向量长度的平方
-     * @return double 向量长度的平方
+     * @brief Calculate squared vector length
+     * @return double Squared vector length
      */
     double lengthSquared() const;
 
     /**
-     * @brief 标准化向量
-     * @return Vector2D 标准化后的向量
+     * @brief Normalize vector
+     * @return Vector2D Normalized vector
      */
     Vector2D normalized() const;
 
     /**
-     * @brief 计算两点间距离
-     * @param other 另一个点
-     * @return double 距离
+     * @brief Calculate distance between two points
+     * @param other Another point
+     * @return double Distance
      */
     double distanceTo(const Vector2D& other) const;
 };

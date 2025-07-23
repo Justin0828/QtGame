@@ -1,8 +1,8 @@
 /**
  * @file Player.cpp
- * @brief 玩家类实现
- * @author QtGame Team
- * @date 2024
+ * @brief Player class implementation
+ * @author Justin0828
+ * @date 2025-07-23
  */
 
 #include "Player.h"
@@ -18,7 +18,7 @@ Player::Player(const Vector2D& startPos, const QColor& playerColor, bool isPlaye
       m_isCrouching(false), m_isGrounded(false), m_currentTerrain(TerrainType::GROUND),
       m_lastAttackTime(0), m_hasAdrenaline(false), m_adrenalineEndTime(0), m_lastAdrenalineHeal(0) {
     
-    // 默认装备拳头
+    // Default fist weapon
     m_weapon = std::make_shared<FistWeapon>();
 }
 
@@ -29,12 +29,12 @@ void Player::update(double deltaTime) {
     updatePhysics(deltaTime);
     updateAdrenalineEffect(deltaTime);
     
-    // 更新武器
+    // Update weapon
     if (m_weapon) {
         m_weapon->update(deltaTime);
     }
     
-    // 更新状态
+    // Update state
     if (m_isCrouching) {
         m_state = PlayerState::CROUCHING;
     } else if (!m_isGrounded) {
@@ -47,14 +47,14 @@ void Player::update(double deltaTime) {
 }
 
 void Player::moveLeft() {
-    if (m_isCrouching) return; // 下蹲时无法移动
+    if (m_isCrouching) return; // Cannot move while crouching
     
     m_isMovingLeft = true;
     m_facingRight = false;
 }
 
 void Player::moveRight() {
-    if (m_isCrouching) return; // 下蹲时无法移动
+    if (m_isCrouching) return; // Cannot move while crouching
     
     m_isMovingRight = true;
     m_facingRight = true;
@@ -66,18 +66,18 @@ void Player::stopMoving() {
 }
 
 void Player::jump() {
-    if (m_isCrouching) return; // 下蹲时无法跳跃
-    if (!m_isGrounded) return; // 只能在地面时跳跃
+    if (m_isCrouching) return; // Cannot jump while crouching
+    if (!m_isGrounded) return; // Can only jump when on ground
     
     m_velocity.y = GameConfig::PLAYER_JUMP_SPEED;
     m_isGrounded = false;
 }
 
 void Player::crouch() {
-    if (!m_isGrounded) return; // 只能在地面时下蹲
+    if (!m_isGrounded) return; // Can only crouch when on ground
     
     m_isCrouching = true;
-    m_velocity.x = 0; // 下蹲时停止水平移动
+    m_velocity.x = 0; // Stop horizontal movement when crouching
 }
 
 void Player::stopCrouching() {
@@ -90,12 +90,12 @@ void Player::attack() {
     auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::steady_clock::now().time_since_epoch()).count();
     
-    if (currentTime - m_lastAttackTime < 100) return; // 防止攻击过于频繁
+    if (currentTime - m_lastAttackTime < 100) return; // Prevent too frequent attacks
     
     m_lastAttackTime = currentTime;
     m_state = PlayerState::ATTACKING;
     
-    // 武器攻击在GameEngine中处理
+    // Weapon attack is handled in GameEngine
 }
 
 bool Player::pickupItem(std::shared_ptr<Item> item) {
@@ -106,12 +106,12 @@ bool Player::pickupItem(std::shared_ptr<Item> item) {
 
 void Player::takeDamage(int damage) {
     m_hp -= damage;
-    m_hp = std::max(0, m_hp); // 确保血量不会小于0
+    m_hp = std::max(0, m_hp); // Ensure HP doesn't go below 0
 }
 
 void Player::heal(int healAmount) {
     m_hp += healAmount;
-    m_hp = std::min(GameConfig::PLAYER_MAX_HP, m_hp); // 确保血量不会超过最大值
+    m_hp = std::min(GameConfig::PLAYER_MAX_HP, m_hp); // Ensure HP doesn't exceed maximum
 }
 
 void Player::applyAdrenaline(int duration) {
@@ -135,12 +135,12 @@ bool Player::isAlive() const {
 }
 
 bool Player::isInvisible() const {
-    // 在草地上下蹲时隐身
+    // Invisible when crouching on grass
     return m_currentTerrain == TerrainType::GRASS && m_isCrouching;
 }
 
 void Player::updatePhysics(double deltaTime) {
-    // 处理水平移动
+    // Handle horizontal movement
     if (!m_isCrouching) {
         double moveSpeed = getCurrentMoveSpeed();
         
@@ -149,7 +149,7 @@ void Player::updatePhysics(double deltaTime) {
         } else if (m_isMovingRight) {
             m_velocity.x = moveSpeed;
         } else {
-            // 应用摩擦力
+            // Apply friction
             m_velocity.x *= GameConfig::FRICTION;
             if (std::abs(m_velocity.x) < 10) {
                 m_velocity.x = 0;
@@ -157,15 +157,15 @@ void Player::updatePhysics(double deltaTime) {
         }
     }
     
-    // 应用重力
+    // Apply gravity
     if (!m_isGrounded) {
         m_velocity.y += GameConfig::GRAVITY * deltaTime;
     }
     
-    // 更新位置
+    // Update position
     m_position += m_velocity * deltaTime;
     
-    // 边界检查
+    // Boundary check
     if (m_position.x < 0) {
         m_position.x = 0;
         m_velocity.x = 0;
@@ -175,14 +175,14 @@ void Player::updatePhysics(double deltaTime) {
         m_velocity.x = 0;
     }
     
-    // 地面检查（简单实现，实际碰撞检测在GameEngine中）
+    // Ground check (simple implementation, actual collision detection in GameEngine)
     if (m_position.y >= GameConfig::GROUND_LEVEL - getHeight()) {
         m_position.y = GameConfig::GROUND_LEVEL - getHeight();
         m_velocity.y = 0;
         m_isGrounded = true;
     }
-    // 注意：不在这里设置m_isGrounded = false，因为这会与GameEngine的碰撞检测冲突
-    // GameEngine会负责设置正确的地面状态
+    // Note: don't set m_isGrounded = false here, as it would conflict with GameEngine's collision detection
+    // GameEngine is responsible for setting the correct ground state
 }
 
 void Player::updateAdrenalineEffect(double deltaTime) {
@@ -191,13 +191,13 @@ void Player::updateAdrenalineEffect(double deltaTime) {
     auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::steady_clock::now().time_since_epoch()).count();
     
-    // 检查肾上腺素是否过期
+    // Check if adrenaline has expired
     if (currentTime >= m_adrenalineEndTime) {
         m_hasAdrenaline = false;
         return;
     }
     
-    // 每秒回血
+    // Heal every second
     if (currentTime - m_lastAdrenalineHeal >= 1000) {
         heal(GameConfig::ADRENALINE_HEAL);
         m_lastAdrenalineHeal = currentTime;
@@ -207,12 +207,12 @@ void Player::updateAdrenalineEffect(double deltaTime) {
 double Player::getCurrentMoveSpeed() const {
     double baseSpeed = GameConfig::PLAYER_SPEED;
     
-    // 冰面加速
+    // Ice terrain speed boost
     if (m_currentTerrain == TerrainType::ICE) {
         baseSpeed *= GameConfig::ICE_SPEED_MULTIPLIER;
     }
     
-    // 肾上腺素加速
+    // Adrenaline speed boost
     if (m_hasAdrenaline) {
         baseSpeed *= GameConfig::ADRENALINE_SPEED_MULTIPLIER;
     }

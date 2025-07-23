@@ -1,66 +1,66 @@
 /**
  * @file Item.cpp
- * @brief 物品系统类实现
- * @author QtGame Team
- * @date 2024
+ * @brief Item system class implementations
+ * @author Justin0828
+ * @date 2025-07-23
  */
 
 #include "Item.h"
 #include "Player.h"
 #include <chrono>
 
-// ======================== Item 基类实现 ========================
+// ======================== Item base class implementation ========================
 
 Item::Item(ItemType type, const Vector2D& position) 
     : m_type(type), m_position(position), m_velocity(0, 0), m_isGrounded(false), m_isValid(true) {
     m_spawnTime = std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::steady_clock::now().time_since_epoch()).count();
     
-    // 根据类型设置属性
+    // Set properties based on type
     switch (type) {
         case ItemType::WEAPON_KNIFE:
             m_width = 25;
             m_height = 8;
-            m_color = QColor(192, 192, 192); // 银色
+            m_color = QColor(192, 192, 192); // Silver
             break;
         case ItemType::WEAPON_BALL:
             m_width = 16;
             m_height = 16;
-            m_color = QColor(255, 165, 0); // 橙色
+            m_color = QColor(255, 165, 0); // Orange
             break;
         case ItemType::WEAPON_RIFLE:
             m_width = 40;
             m_height = 12;
-            m_color = QColor(128, 128, 128); // 灰色
+            m_color = QColor(128, 128, 128); // Gray
             break;
         case ItemType::WEAPON_SNIPER:
             m_width = 50;
             m_height = 15;
-            m_color = QColor(64, 64, 64); // 深灰色
+            m_color = QColor(64, 64, 64); // Dark gray
             break;
         case ItemType::BANDAGE:
             m_width = 20;
             m_height = 15;
-            m_color = QColor(255, 255, 255); // 白色
+            m_color = QColor(255, 255, 255); // White
             break;
         case ItemType::MEDKIT:
             m_width = 25;
             m_height = 20;
-            m_color = QColor(255, 0, 0); // 红色
+            m_color = QColor(255, 0, 0); // Red
             break;
         case ItemType::ADRENALINE:
             m_width = 15;
             m_height = 25;
-            m_color = QColor(0, 255, 0); // 绿色
+            m_color = QColor(0, 255, 0); // Green
             break;
     }
     
-    // 设置初始下降速度
+    // Set initial falling velocity
     m_velocity.y = 200;
 }
 
 void Item::update(double deltaTime) {
-    // 应用重力
+    // Apply gravity
     if (!m_isGrounded) {
         m_velocity.y += GameConfig::GRAVITY * deltaTime;
         m_position += m_velocity * deltaTime;
@@ -75,11 +75,11 @@ bool Item::isValid() const {
     auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::steady_clock::now().time_since_epoch()).count();
     
-    // 检查是否超出存在时间
+    // Check if exceeded lifetime
     return (currentTime - m_spawnTime) < ITEM_LIFETIME;
 }
 
-// ======================== WeaponItem 类实现 ========================
+// ======================== WeaponItem class implementation ========================
 
 WeaponItem::WeaponItem(ItemType type, const Vector2D& position) : Item(type, position) {
 }
@@ -87,7 +87,7 @@ WeaponItem::WeaponItem(ItemType type, const Vector2D& position) : Item(type, pos
 bool WeaponItem::onPickup(Player* player) {
     auto weapon = createWeapon();
     if (weapon) {
-        // 玩家装备新武器（如果有旧武器会被替换）
+        // Player equips new weapon (old weapon will be replaced if exists)
         player->setWeapon(weapon);
         m_isValid = false;
         return true;
@@ -110,7 +110,7 @@ std::shared_ptr<Weapon> WeaponItem::createWeapon() {
     }
 }
 
-// ======================== BandageItem 类实现 ========================
+// ======================== BandageItem class implementation ========================
 
 BandageItem::BandageItem(const Vector2D& position) : Item(ItemType::BANDAGE, position) {
 }
@@ -121,10 +121,10 @@ bool BandageItem::onPickup(Player* player) {
         m_isValid = false;
         return true;
     }
-    return false; // 满血时无法使用
+    return false; // Cannot use when at full health
 }
 
-// ======================== MedkitItem 类实现 ========================
+// ======================== MedkitItem class implementation ========================
 
 MedkitItem::MedkitItem(const Vector2D& position) : Item(ItemType::MEDKIT, position) {
 }
@@ -135,10 +135,10 @@ bool MedkitItem::onPickup(Player* player) {
         m_isValid = false;
         return true;
     }
-    return false; // 满血时无法使用
+    return false; // Cannot use when at full health
 }
 
-// ======================== AdrenalineItem 类实现 ========================
+// ======================== AdrenalineItem class implementation ========================
 
 AdrenalineItem::AdrenalineItem(const Vector2D& position) : Item(ItemType::ADRENALINE, position) {
 }

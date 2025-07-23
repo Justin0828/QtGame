@@ -1,8 +1,8 @@
 /**
  * @file Player.h
- * @brief 玩家类定义
- * @author QtGame Team
- * @date 2024
+ * @brief Player class definition
+ * @author Justin0828
+ * @date 2025-07-23
  */
 
 #ifndef PLAYER_H
@@ -13,141 +13,141 @@
 #include <memory>
 #include <QColor>
 
-// 前向声明
+// Forward declarations
 class Weapon;
 class Item;
 
 /**
- * @brief 玩家状态枚举
+ * @brief Player state enumeration
  */
 enum class PlayerState {
-    STANDING,   ///< 站立状态
-    MOVING,     ///< 移动状态
-    JUMPING,    ///< 跳跃状态
-    CROUCHING,  ///< 下蹲状态
-    ATTACKING   ///< 攻击状态
+    STANDING,   ///< Standing state
+    MOVING,     ///< Moving state
+    JUMPING,    ///< Jumping state
+    CROUCHING,  ///< Crouching state
+    ATTACKING   ///< Attacking state
 };
 
 /**
- * @brief 地形类型枚举
+ * @brief Terrain type enumeration
  */
 enum class TerrainType {
-    GROUND,     ///< 普通土地
-    GRASS,      ///< 草地（隐身效果）
-    ICE         ///< 冰场（加速效果）
+    GROUND,     ///< Normal ground
+    GRASS,      ///< Grass terrain (stealth effect)
+    ICE         ///< Ice terrain (speed boost effect)
 };
 
 /**
- * @brief 玩家类
+ * @brief Player class
  * 
- * 处理玩家的移动、攻击、生命值等所有功能
+ * Handles all player functionality including movement, combat, health, etc.
  */
 class Player {
 public:
     /**
-     * @brief 构造函数
-     * @param startPos 初始位置
-     * @param playerColor 玩家颜色
-     * @param isPlayerOne 是否为玩家1
+     * @brief Constructor
+     * @param startPos Initial position
+     * @param playerColor Player color
+     * @param isPlayerOne Whether this is player one
      */
     Player(const Vector2D& startPos, const QColor& playerColor, bool isPlayerOne);
 
     /**
-     * @brief 析构函数
+     * @brief Destructor
      */
     ~Player();
 
     /**
-     * @brief 更新玩家状态
-     * @param deltaTime 时间增量（秒）
+     * @brief Update player state
+     * @param deltaTime Time delta in seconds
      */
     void update(double deltaTime);
 
     /**
-     * @brief 向左移动
+     * @brief Move left
      */
     void moveLeft();
 
     /**
-     * @brief 向右移动
+     * @brief Move right
      */
     void moveRight();
 
     /**
-     * @brief 停止移动
+     * @brief Stop moving
      */
     void stopMoving();
 
     /**
-     * @brief 跳跃
+     * @brief Jump
      */
     void jump();
 
     /**
-     * @brief 下蹲
+     * @brief Crouch
      */
     void crouch();
 
     /**
-     * @brief 停止下蹲
+     * @brief Stop crouching
      */
     void stopCrouching();
 
     /**
-     * @brief 攻击
+     * @brief Attack
      */
     void attack();
 
     /**
-     * @brief 拾取物品
-     * @param item 要拾取的物品
-     * @return bool 是否成功拾取
+     * @brief Pick up an item
+     * @param item The item to pick up
+     * @return bool Whether pickup was successful
      */
     bool pickupItem(std::shared_ptr<Item> item);
 
     /**
-     * @brief 受到伤害
-     * @param damage 伤害值
+     * @brief Take damage
+     * @param damage Damage amount
      */
     void takeDamage(int damage);
 
     /**
-     * @brief 治疗
-     * @param healAmount 治疗量
+     * @brief Heal
+     * @param healAmount Amount to heal
      */
     void heal(int healAmount);
 
     /**
-     * @brief 应用肾上腺素效果
-     * @param duration 持续时间（毫秒）
+     * @brief Apply adrenaline effect
+     * @param duration Duration in milliseconds
      */
     void applyAdrenaline(int duration);
 
     /**
-     * @brief 设置地形类型
-     * @param terrain 地形类型
+     * @brief Set terrain type
+     * @param terrain Terrain type
      */
     void setTerrainType(TerrainType terrain);
 
     /**
-     * @brief 检查是否在地面上
-     * @return bool 是否在地面
+     * @brief Check if on ground
+     * @return bool Whether on ground
      */
     bool isGrounded() const;
 
     /**
-     * @brief 检查是否存活
-     * @return bool 是否存活
+     * @brief Check if alive
+     * @return bool Whether alive
      */
     bool isAlive() const;
 
     /**
-     * @brief 检查是否隐身
-     * @return bool 是否隐身（草地下蹲状态）
+     * @brief Check if invisible
+     * @return bool Whether invisible (crouching on grass)
      */
     bool isInvisible() const;
 
-    // Getter 方法
+    // Getter methods
     Vector2D getPosition() const { return m_position; }
     Vector2D getVelocity() const { return m_velocity; }
     double getWidth() const { return GameConfig::PLAYER_WIDTH; }
@@ -160,7 +160,7 @@ public:
     bool getIsPlayerOne() const { return m_isPlayerOne; }
     std::shared_ptr<Weapon> getWeapon() const { return m_weapon; }
 
-    // Setter 方法
+    // Setter methods
     void setPosition(const Vector2D& pos) { m_position = pos; }
     void setVelocity(const Vector2D& vel) { m_velocity = vel; }
     void setWeapon(std::shared_ptr<Weapon> weapon) { m_weapon = weapon; }
@@ -168,51 +168,51 @@ public:
 
 private:
     /**
-     * @brief 更新物理状态
-     * @param deltaTime 时间增量
+     * @brief Update physics state
+     * @param deltaTime Time delta
      */
     void updatePhysics(double deltaTime);
 
     /**
-     * @brief 更新肾上腺素效果
-     * @param deltaTime 时间增量
+     * @brief Update adrenaline effect
+     * @param deltaTime Time delta
      */
     void updateAdrenalineEffect(double deltaTime);
 
     /**
-     * @brief 获取当前移动速度
-     * @return double 移动速度
+     * @brief Get current movement speed
+     * @return double Movement speed
      */
     double getCurrentMoveSpeed() const;
 
 private:
-    Vector2D m_position;         ///< 玩家位置
-    Vector2D m_velocity;         ///< 玩家速度
-    PlayerState m_state;         ///< 玩家状态
-    QColor m_color;              ///< 玩家颜色
-    bool m_isPlayerOne;          ///< 是否为玩家1
-    bool m_facingRight;          ///< 是否面向右方
+    Vector2D m_position;         ///< Player position
+    Vector2D m_velocity;         ///< Player velocity
+    PlayerState m_state;         ///< Player state
+    QColor m_color;              ///< Player color
+    bool m_isPlayerOne;          ///< Whether this is player one
+    bool m_facingRight;          ///< Whether facing right
     
-    // 生命值相关
-    int m_hp;                    ///< 当前生命值
+    // Health related
+    int m_hp;                    ///< Current health points
     
-    // 移动控制
-    bool m_isMovingLeft;         ///< 是否正在向左移动
-    bool m_isMovingRight;        ///< 是否正在向右移动
-    bool m_isCrouching;          ///< 是否正在下蹲
-    bool m_isGrounded;           ///< 是否在地面上
+    // Movement control
+    bool m_isMovingLeft;         ///< Whether moving left
+    bool m_isMovingRight;        ///< Whether moving right
+    bool m_isCrouching;          ///< Whether crouching
+    bool m_isGrounded;           ///< Whether on ground
     
-    // 地形相关
-    TerrainType m_currentTerrain; ///< 当前所在地形
+    // Terrain related
+    TerrainType m_currentTerrain; ///< Current terrain type
     
-    // 武器系统
-    std::shared_ptr<Weapon> m_weapon; ///< 当前武器
-    long long m_lastAttackTime;       ///< 上次攻击时间
+    // Weapon system
+    std::shared_ptr<Weapon> m_weapon; ///< Current weapon
+    long long m_lastAttackTime;       ///< Last attack time
     
-    // 状态效果
-    bool m_hasAdrenaline;        ///< 是否有肾上腺素效果
-    long long m_adrenalineEndTime; ///< 肾上腺素效果结束时间
-    long long m_lastAdrenalineHeal; ///< 上次肾上腺素回血时间
+    // Status effects
+    bool m_hasAdrenaline;        ///< Whether has adrenaline effect
+    long long m_adrenalineEndTime; ///< Adrenaline effect end time
+    long long m_lastAdrenalineHeal; ///< Last adrenaline heal time
 };
 
 #endif // PLAYER_H 

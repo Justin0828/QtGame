@@ -1,8 +1,8 @@
 /**
  * @file GameWindow.h
- * @brief 游戏主窗口类定义
- * @author QtGame Team
- * @date 2024
+ * @brief Game main window class definition
+ * @author Justin0828
+ * @date 2025-07-23
  */
 
 #ifndef GAMEWINDOW_H
@@ -22,177 +22,177 @@
 #include <set>
 
 /**
- * @brief 游戏主窗口类
+ * @brief Game main window class
  * 
- * 继承自QMainWindow，负责游戏的渲染和用户界面
+ * Inherits from QMainWindow, responsible for game rendering and user interface
  */
 class GameWindow : public QMainWindow {
     Q_OBJECT
 
 public:
     /**
-     * @brief 构造函数
-     * @param parent 父窗口
+     * @brief Constructor
+     * @param parent Parent window
      */
     explicit GameWindow(QWidget* parent = nullptr);
 
     /**
-     * @brief 析构函数
+     * @brief Destructor
      */
     ~GameWindow();
 
 protected:
     /**
-     * @brief 绘制事件
-     * @param event 绘制事件
+     * @brief Paint event
+     * @param event Paint event
      */
     void paintEvent(QPaintEvent* event) override;
 
     /**
-     * @brief 按键按下事件
-     * @param event 按键事件
+     * @brief Key press event
+     * @param event Key event
      */
     void keyPressEvent(QKeyEvent* event) override;
 
     /**
-     * @brief 按键释放事件
-     * @param event 按键事件
+     * @brief Key release event
+     * @param event Key event
      */
     void keyReleaseEvent(QKeyEvent* event) override;
 
     /**
-     * @brief 窗口关闭事件
-     * @param event 关闭事件
+     * @brief Window close event
+     * @param event Close event
      */
     void closeEvent(QCloseEvent* event) override;
 
 private slots:
     /**
-     * @brief 游戏循环更新
+     * @brief Game loop update
      */
     void gameLoop();
 
 private:
     /**
-     * @brief 初始化UI界面
+     * @brief Initialize UI interface
      */
     void initializeUI();
 
     /**
-     * @brief 绘制游戏元素
-     * @param painter 绘图对象
+     * @brief Draw game elements
+     * @param painter Painter object
      */
     void drawGame(QPainter* painter);
 
     /**
-     * @brief 绘制背景
-     * @param painter 绘图对象
+     * @brief Draw background
+     * @param painter Painter object
      */
     void drawBackground(QPainter* painter);
 
     /**
-     * @brief 绘制平台
-     * @param painter 绘图对象
+     * @brief Draw platforms
+     * @param painter Painter object
      */
     void drawPlatforms(QPainter* painter);
 
     /**
-     * @brief 绘制玩家
-     * @param painter 绘图对象
+     * @brief Draw players
+     * @param painter Painter object
      */
     void drawPlayers(QPainter* painter);
 
     /**
-     * @brief 绘制单个玩家
-     * @param painter 绘图对象
-     * @param player 玩家对象
+     * @brief Draw single player
+     * @param painter Painter object
+     * @param player Player object
      */
     void drawPlayer(QPainter* painter, std::shared_ptr<Player> player);
 
     /**
-     * @brief 绘制投射物
-     * @param painter 绘图对象
+     * @brief Draw projectiles
+     * @param painter Painter object
      */
     void drawProjectiles(QPainter* painter);
 
     /**
-     * @brief 绘制物品
-     * @param painter 绘图对象
+     * @brief Draw items
+     * @param painter Painter object
      */
     void drawItems(QPainter* painter);
 
     /**
-     * @brief 绘制UI界面
-     * @param painter 绘图对象
+     * @brief Draw UI interface
+     * @param painter Painter object
      */
     void drawUI(QPainter* painter);
 
     /**
-     * @brief 绘制生命值条
-     * @param painter 绘图对象
-     * @param player 玩家对象
-     * @param x X坐标
-     * @param y Y坐标
-     * @param playerName 玩家名称
+     * @brief Draw health bar
+     * @param painter Painter object
+     * @param player Player object
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @param playerName Player name
      */
     void drawHealthBar(QPainter* painter, std::shared_ptr<Player> player, 
                       int x, int y, const QString& playerName);
 
     /**
-     * @brief 绘制武器信息
-     * @param painter 绘图对象
-     * @param player 玩家对象
-     * @param x X坐标
-     * @param y Y坐标
+     * @brief Draw weapon information
+     * @param painter Painter object
+     * @param player Player object
+     * @param x X coordinate
+     * @param y Y coordinate
      */
     void drawWeaponInfo(QPainter* painter, std::shared_ptr<Player> player, int x, int y);
 
     /**
-     * @brief 绘制游戏结束画面
-     * @param painter 绘图对象
+     * @brief Draw game over screen
+     * @param painter Painter object
      */
     void drawGameOver(QPainter* painter);
 
     /**
-     * @brief 绘制FPS信息
-     * @param painter 绘图对象
+     * @brief Draw FPS information
+     * @param painter Painter object
      */
     void drawFPS(QPainter* painter);
 
     /**
-     * @brief 更新FPS计算
+     * @brief Update FPS calculation
      */
     void updateFPS();
 
     /**
-     * @brief 获取武器类型名称
-     * @param type 武器类型
-     * @return QString 武器名称
+     * @brief Get weapon type name
+     * @param type Weapon type
+     * @return QString Weapon name
      */
     QString getWeaponTypeName(WeaponType type);
 
     /**
-     * @brief 获取地形颜色
-     * @param type 地形类型
-     * @return QColor 地形颜色
+     * @brief Get terrain color
+     * @param type Terrain type
+     * @return QColor Terrain color
      */
     QColor getTerrainColor(TerrainType type);
 
 private:
-    std::unique_ptr<GameEngine> m_gameEngine; ///< 游戏引擎
-    QTimer* m_gameTimer;                      ///< 游戏循环定时器
+    std::unique_ptr<GameEngine> m_gameEngine; ///< Game engine
+    QTimer* m_gameTimer;                      ///< Game loop timer
     
-    // FPS计算
-    std::chrono::high_resolution_clock::time_point m_lastFrameTime; ///< 上一帧时间
-    int m_frameCount;                         ///< 帧计数
-    double m_currentFPS;                      ///< 当前FPS
-    std::chrono::high_resolution_clock::time_point m_fpsUpdateTime; ///< FPS更新时间
+    // FPS calculation
+    std::chrono::high_resolution_clock::time_point m_lastFrameTime; ///< Last frame time
+    int m_frameCount;                         ///< Frame count
+    double m_currentFPS;                      ///< Current FPS
+    std::chrono::high_resolution_clock::time_point m_fpsUpdateTime; ///< FPS update time
 
-    // UI元素
-    QWidget* m_centralWidget;                 ///< 中央窗口部件
+    // UI elements
+    QWidget* m_centralWidget;                 ///< Central widget
     
-    // 按键状态跟踪
-    std::set<Qt::Key> m_pressedKeys;          ///< 当前按下的按键集合
+    // Key state tracking
+    std::set<Qt::Key> m_pressedKeys;          ///< Currently pressed keys set
 };
 
 #endif // GAMEWINDOW_H 

@@ -1,8 +1,8 @@
 /**
  * @file Weapon.cpp
- * @brief 武器系统类实现
- * @author QtGame Team
- * @date 2024
+ * @brief Weapon system class implementations
+ * @author Justin0828
+ * @date 2025-07-23
  */
 
 #include "Weapon.h"
@@ -10,14 +10,14 @@
 #include <chrono>
 #include <cmath>
 
-// ======================== Projectile 类实现 ========================
+// ======================== Projectile class implementation ========================
 
 Projectile::Projectile(const Vector2D& startPos, const Vector2D& velocity, int damage, AmmoType type, int ownerId)
     : m_position(startPos), m_velocity(velocity), m_damage(damage), m_type(type), m_ownerId(ownerId) {
     m_startTime = std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::steady_clock::now().time_since_epoch()).count();
     
-    // 根据类型设置半径
+    // Set radius based on type
     switch (type) {
         case AmmoType::BULLET:
             m_radius = 3.0;
@@ -32,10 +32,10 @@ Projectile::Projectile(const Vector2D& startPos, const Vector2D& velocity, int d
 }
 
 void Projectile::update(double deltaTime) {
-    // 更新位置
+    // Update position
     m_position += m_velocity * deltaTime;
     
-    // 如果是投掷物，应用重力
+    // Apply gravity for thrown projectiles
     if (m_type == AmmoType::THROWN) {
         m_velocity.y += GameConfig::GRAVITY * deltaTime;
     }
@@ -45,12 +45,12 @@ bool Projectile::isValid() const {
     auto currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::steady_clock::now().time_since_epoch()).count();
     
-    // 检查是否超出存在时间
+    // Check if exceeded lifetime
     if (currentTime - m_startTime > MAX_LIFETIME) {
         return false;
     }
     
-    // 检查是否超出屏幕边界
+    // Check if out of screen bounds
     if (m_position.x < -100 || m_position.x > GameConfig::WINDOW_WIDTH + 100 ||
         m_position.y < -100 || m_position.y > GameConfig::WINDOW_HEIGHT + 100) {
         return false;
@@ -59,39 +59,39 @@ bool Projectile::isValid() const {
     return true;
 }
 
-// ======================== Weapon 基类实现 ========================
+// ======================== Weapon base class implementation ========================
 
 Weapon::Weapon(WeaponType type) : m_type(type), m_lastAttackTime(0) {
     switch (type) {
         case WeaponType::FIST:
-            m_ammo = -1; // 无限使用
+            m_ammo = -1; // Infinite use
             m_damage = GameConfig::FIST_DAMAGE;
             m_cooldown = GameConfig::FIST_COOLDOWN;
-            m_color = QColor(139, 69, 19); // 棕色
+            m_color = QColor(139, 69, 19); // Brown
             break;
         case WeaponType::KNIFE:
-            m_ammo = -1; // 无限使用
+            m_ammo = -1; // Infinite use
             m_damage = GameConfig::KNIFE_DAMAGE;
             m_cooldown = GameConfig::KNIFE_COOLDOWN;
-            m_color = QColor(192, 192, 192); // 银色
+            m_color = QColor(192, 192, 192); // Silver
             break;
         case WeaponType::BALL:
             m_ammo = GameConfig::BALL_COUNT;
             m_damage = GameConfig::BALL_DAMAGE;
             m_cooldown = GameConfig::BALL_COOLDOWN;
-            m_color = QColor(255, 165, 0); // 橙色
+            m_color = QColor(255, 165, 0); // Orange
             break;
         case WeaponType::RIFLE:
             m_ammo = GameConfig::RIFLE_AMMO;
             m_damage = GameConfig::RIFLE_DAMAGE;
             m_cooldown = GameConfig::RIFLE_COOLDOWN;
-            m_color = QColor(128, 128, 128); // 灰色
+            m_color = QColor(128, 128, 128); // Gray
             break;
         case WeaponType::SNIPER:
             m_ammo = GameConfig::SNIPER_AMMO;
             m_damage = GameConfig::SNIPER_DAMAGE;
             m_cooldown = GameConfig::SNIPER_COOLDOWN;
-            m_color = QColor(64, 64, 64); // 深灰色
+            m_color = QColor(64, 64, 64); // Dark gray
             break;
     }
 }
@@ -108,7 +108,7 @@ bool Weapon::canAttack() const {
 }
 
 void Weapon::update(double deltaTime) {
-    // 武器基类暂时不需要更新逻辑
+    // Weapon base class doesn't need update logic for now
 }
 
 void Weapon::consumeAmmo() {
@@ -122,7 +122,7 @@ void Weapon::resetCooldown() {
         std::chrono::steady_clock::now().time_since_epoch()).count();
 }
 
-// ======================== FistWeapon 类实现 ========================
+// ======================== FistWeapon class implementation ========================
 
 FistWeapon::FistWeapon() : Weapon(WeaponType::FIST) {
 }
@@ -133,11 +133,11 @@ std::shared_ptr<Projectile> FistWeapon::attack(Player* player, const Vector2D& t
     }
     
     resetCooldown();
-    // 拳头是近战武器，不产生投射物，伤害直接在游戏引擎中处理
+    // Fist is melee weapon, no projectile generated, damage handled directly in game engine
     return nullptr;
 }
 
-// ======================== KnifeWeapon 类实现 ========================
+// ======================== KnifeWeapon class implementation ========================
 
 KnifeWeapon::KnifeWeapon() : Weapon(WeaponType::KNIFE) {
 }
@@ -148,11 +148,11 @@ std::shared_ptr<Projectile> KnifeWeapon::attack(Player* player, const Vector2D& 
     }
     
     resetCooldown();
-    // 小刀是近战武器，不产生投射物，伤害直接在游戏引擎中处理
+    // Knife is melee weapon, no projectile generated, damage handled directly in game engine
     return nullptr;
 }
 
-// ======================== BallWeapon 类实现 ========================
+// ======================== BallWeapon class implementation ========================
 
 BallWeapon::BallWeapon() : Weapon(WeaponType::BALL) {
 }
@@ -166,13 +166,13 @@ std::shared_ptr<Projectile> BallWeapon::attack(Player* player, const Vector2D& t
     resetCooldown();
     
     Vector2D playerPos = player->getPosition();
-    // 从玩家中心发射实心球
+    // Fire ball from player center
     Vector2D startPos = playerPos + Vector2D(
         player->isFacingRight() ? player->getWidth() * 0.8 : player->getWidth() * 0.2 - 20, 
-        player->getHeight() * 0.3  // 从玩家上半身发射
+        player->getHeight() * 0.3  // Fire from player's upper body
     );
     
-    // 计算抛物线投掷速度
+    // Calculate parabolic throw velocity
     double direction = player->isFacingRight() ? 1.0 : -1.0;
     double angleRad = GameConfig::BALL_THROW_ANGLE * M_PI / 180.0;
     Vector2D velocity(
@@ -184,7 +184,7 @@ std::shared_ptr<Projectile> BallWeapon::attack(Player* player, const Vector2D& t
                                       player->getIsPlayerOne() ? 0 : 1);
 }
 
-// ======================== RifleWeapon 类实现 ========================
+// ======================== RifleWeapon class implementation ========================
 
 RifleWeapon::RifleWeapon() : Weapon(WeaponType::RIFLE) {
 }
@@ -198,13 +198,13 @@ std::shared_ptr<Projectile> RifleWeapon::attack(Player* player, const Vector2D& 
     resetCooldown();
     
     Vector2D playerPos = player->getPosition();
-    // 从玩家中心高度发射，水平偏移根据朝向
+    // Fire from player center height, horizontal offset based on facing direction
     Vector2D startPos = playerPos + Vector2D(
         player->isFacingRight() ? player->getWidth() : -5, 
-        player->getHeight() * 0.4  // 从玩家中心偏上一点发射
+        player->getHeight() * 0.4  // Fire from slightly above player center
     );
     
-    // 水平射击
+    // Horizontal shooting
     Vector2D velocity(
         GameConfig::BULLET_SPEED * (player->isFacingRight() ? 1.0 : -1.0),
         0
@@ -214,7 +214,7 @@ std::shared_ptr<Projectile> RifleWeapon::attack(Player* player, const Vector2D& 
                                       player->getIsPlayerOne() ? 0 : 1);
 }
 
-// ======================== SniperWeapon 类实现 ========================
+// ======================== SniperWeapon class implementation ========================
 
 SniperWeapon::SniperWeapon() : Weapon(WeaponType::SNIPER) {
 }
@@ -228,13 +228,13 @@ std::shared_ptr<Projectile> SniperWeapon::attack(Player* player, const Vector2D&
     resetCooldown();
     
     Vector2D playerPos = player->getPosition();
-    // 从玩家中心高度发射，水平偏移根据朝向
+    // Fire from player center height, horizontal offset based on facing direction
     Vector2D startPos = playerPos + Vector2D(
         player->isFacingRight() ? player->getWidth() : -5, 
-        player->getHeight() * 0.4  // 从玩家中心偏上一点发射
+        player->getHeight() * 0.4  // Fire from slightly above player center
     );
     
-    // 水平射击，速度更快
+    // Horizontal shooting, faster speed
     Vector2D velocity(
         GameConfig::BULLET_SPEED * 1.5 * (player->isFacingRight() ? 1.0 : -1.0),
         0
